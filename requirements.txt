@@ -1,0 +1,6 @@
+neovim
+yapf
+pylint
+flake8
+mypy
+isort
