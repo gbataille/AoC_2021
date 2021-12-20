@@ -1,6 +1,8 @@
-neovim
-yapf
-pylint
 flake8
-mypy
+ipython
 isort
+mypy
+neovim
+pylint
+requests
+yapf
