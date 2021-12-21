@@ -1,14 +1,21 @@
 from pathlib import Path
+from typing import Optional
 
 from utils import aoc_input
 
-
-def main_part_1(input_file: Path) -> None:
-    input_data = input_file.read_text()
+TEST_DATA = ""
 
 
-def main_part_2(input_file: Path) -> None:
-    input_data = input_file.read_text()
+def main_part_1(input_file: Optional[Path] = None) -> None:
+    input_data = TEST_DATA
+    if input_file:
+        input_data = input_file.read_text()
+
+
+def main_part_2(input_file: Optional[Path] = None) -> None:
+    input_data = TEST_DATA
+    if input_file:
+        input_data = input_file.read_text()
 
     cnt = 0
     lines = list(map(int, input_data.strip().split('\n')))
@@ -21,12 +28,14 @@ def main_part_2(input_file: Path) -> None:
     print(cnt)
 
 
-def main(day_num: int, part_num: int) -> None:
-    if part_num == 1:
+def main(day_num: int, part_num: int, with_test_data=True) -> None:
+    input_file = None
+    if not with_test_data:
         input_file = aoc_input.get_input(day_num, part_num)
+
+    if part_num == 1:
         main_part_1(input_file)
     elif part_num == 2:
-        input_file = aoc_input.get_input(day_num, part_num)
         main_part_2(input_file)
     else:
         raise ValueError(f"Invalid part number {part_num}")
