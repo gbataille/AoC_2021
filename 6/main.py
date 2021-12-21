@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 from utils import aoc_input
+from utils.out import debug
 
 
 TEST_DATA = ""

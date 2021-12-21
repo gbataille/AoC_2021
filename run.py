@@ -1,4 +1,5 @@
 import importlib
+import os
 import sys
 
 
@@ -32,6 +33,9 @@ def run():
     mode = "TEST"
     if len(sys.argv) == 4 and sys.argv[3].lower() == "prod":
         mode = "PROD"
+
+    if mode == "TEST":
+        os.environ['AOC_TEST'] = 'true'
 
     day_module = importlib.import_module(str(day_num))
     day_module.main(day_num, part_num, with_test_data=(mode == "TEST"))
