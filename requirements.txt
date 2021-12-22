@@ -4,6 +4,8 @@ ipython
 isort
 mypy
 neovim
+numpy
+pandas
 pylint
 requests
 yapf
