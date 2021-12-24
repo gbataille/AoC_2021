@@ -17,7 +17,14 @@ class Point2D:
         return hash((self.x, self.y))
 
 
+C = TypeVar('C')
 T = TypeVar('T')
+
+
+@dataclass
+class Cell(Generic[C, T]):
+    coordinates: C
+    value: T
 
 
 @dataclass
@@ -34,8 +41,11 @@ class Array2D(Generic[T]):
         self.width = len(cells[0])
         self.height = len(cells)
 
-    def get_at(self, x: int, y: int) -> T:
+    def get_value_at(self, x: int, y: int) -> T:
         return self.cells[y][x]
+
+    def get_cell_at(self, x: int, y: int) -> Cell[Point2D, T]:
+        return Cell(Point2D(x, y), self.get_value_at(x, y))
 
     def insert_at(self, x: int, y: int, value: T) -> 'Array2D':
         if x > self.width or x < 0:
@@ -49,17 +59,20 @@ class Array2D(Generic[T]):
     def insert_at_point(self, p: Point2D, value: T) -> 'Array2D':
         return self.insert_at(p.x, p.y, value)
 
-    def step_through(self, horizontally: bool = True) -> Generator[Tuple[int, int, T], None, None]:
+    def insert_cell(self, cell: Cell[Point2D, T]) -> 'Array2D':
+        return self.insert_at_point(cell.coordinates, cell.value)
+
+    def step_through(self, horizontally: bool = True) -> Generator[Cell[Point2D, T], None, None]:
         if horizontally:
             for y in range(self.height):
                 for x in range(self.width):
-                    yield (x, y, self.cells[y][x])
+                    yield self.get_cell_at(x, y)
         else:
             for x in range(self.width):
                 for y in range(self.height):
-                    yield (x, y, self.get_at(x, y))
+                    yield self.get_cell_at(x, y)
 
-    def neighbours(self, x: int, y: int, include_diags: bool = False) -> Generator[Tuple[int, int, T], None, None]:
+    def neighbours(self, x: int, y: int, include_diags: bool = False) -> Generator[Cell[Point2D, T], None, None]:
         for dx in range(-1, 2):
             for dy in range(-1, 2):
                 # skip diag
@@ -76,7 +89,7 @@ class Array2D(Generic[T]):
                 if not 0 <= y + dy < self.height:
                     continue
 
-                yield (x + dx, y + dy, self.get_at(x + dx, y + dy))
+                yield self.get_cell_at(x + dx, y + dy)
 
     @staticmethod
     def from_string(

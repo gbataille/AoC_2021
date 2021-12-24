@@ -21,11 +21,11 @@ def main_part_1(input_file: Optional[Path]) -> None:
 
     out = 0
 
-    for x, y, v in heightmap.step_through():
-        neighbours = list(map(lambda j: j[2], heightmap.neighbours(x, y)))
-        if v < min(neighbours):
-            low_points.append(geo.Point2D(x, y))
-            out += 1 + v
+    for cell in heightmap.step_through():
+        neighbours = list(map(lambda j: j.value, heightmap.neighbours(cell.coordinates.x, cell.coordinates.y)))
+        if cell.value < min(neighbours):
+            low_points.append(cell.coordinates)
+            out += 1 + cell.value
 
     print(out)
 
@@ -38,17 +38,17 @@ def main_part_2(input_file: Optional[Path] = None) -> None:
     heightmap = geo.Array2D[int].from_string(input_data, int)
     low_points: List[geo.Point2D] = []
 
-    for x, y, v in heightmap.step_through():
-        neighbours = list(map(lambda j: j[2], heightmap.neighbours(x, y)))
-        if v < min(neighbours):
-            low_points.append(geo.Point2D(x, y))
+    for cell in heightmap.step_through():
+        neighbours = list(map(lambda j: j.value, heightmap.neighbours(cell.coordinates.x, cell.coordinates.y)))
+        if cell.value < min(neighbours):
+            low_points.append(cell.coordinates)
 
     def extend_basin(basin: Set[geo.Point2D]):
         len_in = len(basin)
         addtl_points: List[Tuple[int, int, int]] = []
         for point in basin:
             addtl_points += list(heightmap.neighbours(point.x, point.y))
-        basin = basin | set(map(lambda j: geo.Point2D(j[0], j[1]), filter(lambda x: x[2] != 9, addtl_points)))
+        basin = basin | set(map(lambda j: j.coordinates, filter(lambda i: i.value != 9, addtl_points)))
         len_out = len(basin)
         if len_in == len_out:
             return basin
