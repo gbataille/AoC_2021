@@ -29,7 +29,7 @@ class Cell(Generic[C, T]):
 
 @dataclass
 class Array2D(Generic[T]):
-    cells: List[List[T]]
+    cells: List[List[Cell[Point2D, T]]]
     height: int
     width: int
 
@@ -37,30 +37,34 @@ class Array2D(Generic[T]):
         self,
         cells: List[List[T]],
     ):
-        self.cells = cells
+        self.cells = [[Cell(Point2D(cell_idx, line_idx), cell_value) for cell_idx, cell_value in enumerate(line)]
+                      for line_idx, line in enumerate(cells)]
         self.width = len(cells[0])
         self.height = len(cells)
 
+    def __iter__(self) -> Generator[Cell[Point2D, T], None, None]:
+        return self.step_through()
+
     def get_value_at(self, x: int, y: int) -> T:
-        return self.cells[y][x]
+        return self.get_cell_at(x, y).value
 
     def get_cell_at(self, x: int, y: int) -> Cell[Point2D, T]:
-        return Cell(Point2D(x, y), self.get_value_at(x, y))
+        return self.cells[y][x]
 
-    def insert_at(self, x: int, y: int, value: T) -> 'Array2D':
+    def set_value_at(self, x: int, y: int, value: T) -> 'Array2D':
         if x > self.width or x < 0:
             raise IndexError(f'x {x} is outside the array boundaries')
         if y > self.height or y < 0:
             raise IndexError(f'y {y} is outside the array boundaries')
 
-        self.cells[y][x] = value
+        return self.set_cell(Cell(Point2D(x, y), value))
+
+    def set_value_at_point(self, p: Point2D, value: T) -> 'Array2D':
+        return self.set_cell(Cell(p, value))
+
+    def set_cell(self, cell: Cell[Point2D, T]) -> 'Array2D':
+        self.cells[cell.coordinates.y][cell.coordinates.x] = cell
         return self
-
-    def insert_at_point(self, p: Point2D, value: T) -> 'Array2D':
-        return self.insert_at(p.x, p.y, value)
-
-    def insert_cell(self, cell: Cell[Point2D, T]) -> 'Array2D':
-        return self.insert_at_point(cell.coordinates, cell.value)
 
     def step_through(self, horizontally: bool = True) -> Generator[Cell[Point2D, T], None, None]:
         if horizontally:
@@ -125,7 +129,7 @@ class Array2D(Generic[T]):
         for line in self.cells:
             line_str = ''
             for elem in line:
-                line_str += elem_separator + elem_to_str(elem)
+                line_str += elem_separator + elem_to_str(elem.value)
 
             if elem_separator != '':
                 line_str = line_str[1:]
