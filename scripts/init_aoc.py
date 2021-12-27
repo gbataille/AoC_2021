@@ -25,7 +25,7 @@ def main_part_2(input_file: Optional[Path] = None) -> None:
 def main(day_num: int, part_num: int, with_test_data=True) -> None:
     input_file = None
     if not with_test_data:
-        input_file = aoc_input.get_input(day_num, part_num)
+        input_file = aoc_input.get_input(day_num)
 
     if part_num == 1:
         main_part_1(input_file)
@@ -38,7 +38,7 @@ def main(day_num: int, part_num: int, with_test_data=True) -> None:
 def main():
     root_path = Path(__file__).parent.parent
     for day in range(1, 26):
-        day_path = root_path.joinpath(str(day))
+        day_path = root_path.joinpath(f'day{str(day)}')
         if not day_path.exists():
             day_path.mkdir()
         day_path.joinpath("__init__.py").write_text("from .main import *")
