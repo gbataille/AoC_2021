@@ -37,7 +37,7 @@ def run():
     if mode == "TEST":
         os.environ['AOC_TEST'] = 'true'
 
-    day_module = importlib.import_module(str(day_num))
+    day_module = importlib.import_module(f'day{str(day_num)}')
     day_module.main(day_num, part_num, with_test_data=(mode == "TEST"))
 
 

@@ -26,6 +26,14 @@ class Cell(Generic[C, T]):
     coordinates: C
     value: T
 
+    def __hash__(self):
+        return hash(self.coordinates) | hash(self.value)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Cell):
+            return False
+        return self.coordinates == other.coordinates and self.value == other.value
+
 
 @dataclass
 class Array2D(Generic[T]):
