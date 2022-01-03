@@ -67,14 +67,14 @@ def main_part_2(input_file: Optional[Path] = None) -> None:
         try:
             max_iter = math.floor(((2 * vx + 1) / 2) - math.sqrt(((2 * vx + 1) / 2)**2 - 2 * max_x))
         except ValueError:
-            max_iter = max_x
+            max_iter = 300
 
         for iter_nb in range(min_iter, max_iter + 1):
             if iter_to_vx.get(iter_nb) is None:
                 iter_to_vx[iter_nb] = []
             iter_to_vx[iter_nb].append(vx)
 
-    debug(iter_to_vx)
+    print(iter_to_vx)
 
     iter_to_vy = {}
     for vy in range(min_vy, max_vy + 1):
@@ -114,7 +114,7 @@ def main_part_2(input_file: Optional[Path] = None) -> None:
                 iter_to_vy[iter_nb] = []
             iter_to_vy[iter_nb].append(vy)
 
-    debug(iter_to_vy)
+    print(iter_to_vy)
 
     pairs = set([])
     for key, x_sol in iter_to_vx.items():
