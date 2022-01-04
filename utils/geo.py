@@ -1,6 +1,8 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Callable, Generator, Generic, List, Optional, Tuple, TypeVar
+from typing import Callable, Dict, Generator, Generic, List, Optional, Set, Tuple, TypeVar
+
+from utils import strings
 
 
 @dataclass
@@ -158,3 +160,74 @@ class Array2D(Generic[T]):
             cells.append(deepcopy(line))
 
         return Array2D(cells)
+
+
+def dijkstra(weight_map: Array2D[int], start: Point2D, end: Point2D) -> int:
+    INFINITY = -1
+    path_weight: Array2D[int] = Array2D.empty(weight_map.width, weight_map.height, INFINITY)
+    unvisited: Set[Point2D] = set(map(lambda x: x.coordinates, weight_map.step_through()))
+
+    # Accelerating structure
+    distance_to_node: Dict[int, List[Point2D]] = {0: [Point2D(0, 0)]}
+
+    def smallest_head_node() -> Tuple[Point2D, int]:
+        distances = list(distance_to_node.keys())
+        distances.sort()
+        return distance_to_node[distances[0]][0], distances[0]
+
+        min_weight = -1
+        shortest_head = Point2D(-1, -1)
+
+        for node in unvisited:
+            value = path_weight.get_value_at(node.x, node.y)
+            if value == -1:
+                continue
+
+            if min_weight == -1 or value < min_weight:
+                min_weight = value
+                shortest_head = node
+
+        return shortest_head, min_weight
+
+    def done() -> bool:
+        return path_weight.get_value_at(end.x, end.y) != INFINITY or len(unvisited) == 0
+
+    path_weight.set_value_at_point(start, 0)
+
+    i = 0
+    node = start
+    current_weight = 0
+    from datetime import datetime
+    while not done():
+        # if i % 100 == 0:
+        #     print(
+        #         path_weight.to_string(
+        #             lambda x: '  .' if x == -1 else strings.replace_leading_x('0', ' ',
+        #                                                                       str(x).zfill(3)),
+        #             elem_separator=' ',
+        #         ))
+        #     input("press enter\n")
+        beginning = datetime.now().timestamp() * 1000
+        for neighbour in weight_map.neighbours(node.x, node.y):
+            neighbour_weight = path_weight.get_value_at(neighbour.coordinates.x, neighbour.coordinates.y)
+            new_weight = current_weight + neighbour.value
+            if neighbour_weight == INFINITY or new_weight < neighbour_weight:
+                path_weight.set_value_at_point(neighbour.coordinates, new_weight)
+
+                if neighbour_weight != INFINITY:
+                    distance_to_node[neighbour_weight].remove(neighbour.coordinates)
+                    if not distance_to_node[neighbour_weight]:
+                        del distance_to_node[neighbour_weight]
+                if distance_to_node.get(new_weight) is None:
+                    distance_to_node[new_weight] = []
+                distance_to_node[new_weight].append(neighbour.coordinates)
+
+        distance_to_node[current_weight].remove(node)
+        if not distance_to_node[current_weight]:
+            del distance_to_node[current_weight]
+        unvisited.remove(node)
+        node, current_weight = smallest_head_node()
+        i += 1
+        print(datetime.now().timestamp() * 1000 - beginning)
+
+    return path_weight.get_value_at(end.x, end.y)

@@ -74,18 +74,22 @@ def main_part_1(input_file: Optional[Path]) -> None:
     start = chitons.get_cell_at(0, 0)
     paths: List[SubmarinePath] = [SubmarinePath(head=start)]
 
-    solver = Solver(chitons, min_map, paths)
-    while solver.paths:
-        solver.move1()
-        print(
-            solver.min_map.to_string(
-                lambda x: '  .' if x == -1 else str(x).zfill(3).replace('0', ' '),
-                elem_separator=' ',
-            ))
-        input("press enter")
-        print('')
-
-    print(solver.min_map.get_cell_at(solver.min_map.width - 1, solver.min_map.height - 1))
+    dist = geo.dijkstra(chitons, geo.Point2D(0, 0), geo.Point2D(chitons.width - 1, chitons.height - 1))
+    print(dist)
+    # solver = Solver(chitons, min_map, paths)
+    # i = 0
+    # while solver.paths:
+    #     solver.move1()
+    #     print(f'{i}: heads = {len(solver.paths)}')
+    #     i += 1
+    #     # print(
+    #     #     solver.min_map.to_string(
+    #     #         lambda x: '  .' if x == -1 else str(x).zfill(3).replace('0', ' '),
+    #     #         elem_separator=' ',
+    #     #     ))
+    #     # input("press enter\n")
+    #
+    # print(solver.min_map.get_cell_at(solver.min_map.width - 1, solver.min_map.height - 1))
 
 
 def main_part_2(input_file: Optional[Path] = None) -> None:
@@ -104,6 +108,10 @@ def main_part_2(input_file: Optional[Path] = None) -> None:
         if chiton_value > 9:
             chiton_value -= 9
         chiton_cell.value = chiton_value
+
+    dist = geo.dijkstra(chitons, geo.Point2D(0, 0), geo.Point2D(chitons.width - 1, chitons.height - 1))
+    print(dist)
+    return
 
     min_map: geo.Array2D[int] = geo.Array2D.empty(chitons.width, chitons.height, -1)
     min_map.set_value_at(0, 0, 0)
