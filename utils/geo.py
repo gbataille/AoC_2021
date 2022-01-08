@@ -1,26 +1,25 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Callable, Dict, Generator, Generic, List, Optional, Set, Tuple, TypeVar
+from typing import Callable, Dict, Generator, Generic, Hashable, List, Optional, Set, Tuple, TypeVar, Union
 
 from utils import strings
 
 
-@dataclass
+@dataclass(frozen=True)
 class Point2D:
     x: int
     y: int
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Point2D):
-            return False
-        return self.x == other.x and self.y == other.y
 
-    def __hash__(self) -> int:
-        return hash((self.x, self.y))
+@dataclass(frozen=True)
+class Point3D:
+    x: int
+    y: int
+    z: int
 
 
 C = TypeVar('C')
-T = TypeVar('T')
+T = TypeVar('T', bound=Hashable)
 
 
 @dataclass

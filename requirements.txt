@@ -9,3 +9,4 @@ pandas
 pylint
 requests
 yapf
+z3
